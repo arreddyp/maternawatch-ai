@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Risk History — MaternaWatch AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+    <div class="logo">MATERNAWATCH AI</div>
+    <div class="top-right">
+        <div class="user-info" id="user-info">Patient</div>
+        <button class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="app-wrap">
+    <nav class="sidebar">
+        <h3>MENU</h3>
+        <ul>
+            <li><a href="patient.html">Dashboard</a></li>
+            <li><a href="patient-vitals.html">Enter Vitals</a></li>
+            <li class="active"><a href="patient-history.html">Risk History</a></li>
+            <li><a href="patient-alerts.html">My Alerts</a></li>
+            <li><a href="doctor.html">Doctor View</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="card">
+            <h3>Risk History</h3>
+            <table style="margin-top:12px">
+                <thead>
+                    <tr><th>Date</th><th>Score</th><th>Level</th><th>Action</th></tr>
+                </thead>
+                <tbody id="history-table">
+                    <tr class="table-empty"><td colspan="4">Loading history...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Detail Modal (hidden by default) -->
+        <div id="detail-modal" style="display:none;margin-top:16px;">
+            <div class="card">
+                <h3>Risk Details</h3>
+                <div id="detail-content"></div>
+                <button class="submit-btn" onclick="closeDetailModal()" style="margin-top:12px">Close</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+// Sample risk history data
+const sampleRiskHistory = [
+    { date: '3/5/2026, 8:30 AM', score: 7, level: 'High', factors: 'Elevated BP (145/92), High blood sugar (158), Previous GDM history' },
+    { date: '3/4/2026, 9:15 AM', score: 6, level: 'High', factors: 'Elevated BP (142/90), High blood sugar (152), Previous GDM' },
+    { date: '3/3/2026, 10:00 AM', score: 5, level: 'Moderate', factors: 'Slightly elevated BP (138/88), Blood sugar (148)' },
+    { date: '3/2/2026, 8:45 AM', score: 6, level: 'High', factors: 'Elevated BP (143/91), High blood sugar (155), Headache reported' },
+    { date: '3/1/2026, 9:30 AM', score: 5, level: 'Moderate', factors: 'BP (140/89), Blood sugar (149), Mild swelling' },
+    { date: '2/29/2026, 8:00 AM', score: 6, level: 'High', factors: 'Elevated BP (145/92), High blood sugar (156), Previous GDM' },
+    { date: '2/28/2026, 10:30 AM', score: 7, level: 'High', factors: 'High BP (148/94), Elevated blood sugar (160), Headache and swelling' },
+    { date: '2/27/2026, 9:00 AM', score: 4, level: 'Moderate', factors: 'BP (135/86), Blood sugar (142)' },
+    { date: '2/26/2026, 8:15 AM', score: 5, level: 'Moderate', factors: 'BP (138/88), Blood sugar (145), Mild symptoms' },
+    { date: '2/25/2026, 10:45 AM', score: 3, level: 'Low', factors: 'Normal ranges, no symptoms reported' }
+];
+
+function loadRiskHistory() {
+    const tbody = document.getElementById('history-table');
+    tbody.innerHTML = '';
+    
+    if (sampleRiskHistory.length === 0) {
+        tbody.innerHTML = '<tr class="table-empty"><td colspan="4">No history yet</td></tr>';
+        return;
+    }
+    
+    sampleRiskHistory.forEach((entry, index) => {
+        const tr = document.createElement('tr');
+        const levelClass = entry.level === 'High' ? 'red' : entry.level === 'Moderate' ? 'orange' : '';
+        
+        tr.innerHTML = `
+            <td>${entry.date}</td>
+            <td><strong>${entry.score}</strong></td>
+            <td><span class="${levelClass}">${entry.level}</span></td>
+            <td><button class="view-btn" onclick="viewDetails(${index})">View</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function viewDetails(index) {
+    const entry = sampleRiskHistory[index];
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    
+    content.innerHTML = `
+        <div class="kv" style="margin-bottom:12px">
+            <div><strong>Date:</strong></div>
+            <div>${entry.date}</div>
+        </div>
+        <div class="kv" style="margin-bottom:12px">
+            <div><strong>Risk Score:</strong></div>
+            <div class="big-number ${entry.level === 'High' ? 'red' : entry.level === 'Moderate' ? 'orange' : ''}">${entry.score}</div>
+        </div>
+        <div class="kv" style="margin-bottom:12px">
+            <div><strong>Risk Level:</strong></div>
+            <div class="${entry.level === 'High' ? 'red' : entry.level === 'Moderate' ? 'orange' : ''}">${entry.level}</div>
+        </div>
+        <div style="margin-top:16px">
+            <strong>Contributing Factors:</strong>
+            <div style="color:var(--muted);margin-top:8px">${entry.factors}</div>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+}
+
+function closeDetailModal() {
+    document.getElementById('detail-modal').style.display = 'none';
+}
+
+// Load history on page load
+document.addEventListener('DOMContentLoaded', loadRiskHistory);
+</script>
+</body>
+</html>

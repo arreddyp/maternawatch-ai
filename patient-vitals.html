@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enter Vitals — MaternaWatch AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+    <div class="logo">MATERNAWATCH AI</div>
+    <div class="top-right">
+        <div class="user-info" id="user-info">Patient</div>
+        <button class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="app-wrap">
+    <nav class="sidebar">
+        <h3>MENU</h3>
+        <ul>
+            <li><a href="patient.html">Dashboard</a></li>
+            <li class="active"><a href="patient-vitals.html">Enter Vitals</a></li>
+            <li><a href="patient-history.html">Risk History</a></li>
+            <li><a href="patient-alerts.html">My Alerts</a></li>
+            <li><a href="doctor.html">Doctor View</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="card">
+            <h3>Enter Daily Vitals</h3>
+            <form class="vitals-form" id="vitals-form" style="margin-top:12px">
+                <h4 style="grid-column:1/-1;margin-bottom:8px">Daily Health Check</h4>
+
+                <div class="form-group">
+                    <label>Blood Pressure (Systolic)</label>
+                    <input id="bp-sys" name="bpSys" type="number" min="70" max="250" placeholder="120" required>
+                </div>
+                <div class="form-group">
+                    <label>Blood Pressure (Diastolic)</label>
+                    <input id="bp-dia" name="bpDia" type="number" min="40" max="150" placeholder="80" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Blood Sugar (mg/dL)</label>
+                    <input id="sugar" name="sugar" type="number" min="50" max="400" placeholder="100" required>
+                </div>
+                <div class="form-group">
+                    <label>Weight (kg)</label>
+                    <input id="weight" name="weight" type="number" min="30" max="200" step="0.1" placeholder="70" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Pulse (bpm)</label>
+                    <input id="pulse" name="pulse" type="number" min="40" max="150" placeholder="80" required>
+                </div>
+                <div class="form-group">
+                    <label>Fetal Heart Rate (bpm)</label>
+                    <input id="fhr" name="fhr" type="number" min="100" max="200" placeholder="140" required>
+                </div>
+
+                <h4 style="grid-column:1/-1;margin-top:16px;margin-bottom:8px">How Are You Feeling Today?</h4>
+                <div class="form-group symptom-grid" style="grid-column:1/-1">
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Severe Headache"> Severe Headache</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Swelling in hands or feet"> Swelling in hands or feet</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Blurred vision"> Blurred vision</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Nausea or vomiting"> Nausea or vomiting</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Abdominal pain"> Abdominal pain</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Reduced fetal movement"> Reduced fetal movement</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Dizziness"> Dizziness</label>
+                    <label class="symptom-item"><input type="checkbox" name="symptoms" value="Fever"> Fever</label>
+                </div>
+
+                <div class="form-group" style="grid-column:1/-1">
+                    <label>Describe any other symptoms (optional)</label>
+                    <textarea id="other-symptoms" name="otherSymptoms" placeholder="Type here..."></textarea>
+                </div>
+
+                <button class="submit-btn" type="submit" style="grid-column:1/-1">Submit Daily Check</button>
+
+                <!-- NEW: result directly under submit button -->
+                <div id="quick-result" style="display:none;grid-column:1/-1;margin-top:10px;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;">
+                    <div><strong>Today's Result:</strong> <span id="quick-level"></span></div>
+                    <div style="margin-top:6px;">Risk Score: <strong id="quick-score"></strong></div>
+                    <div id="quick-factors" style="margin-top:8px;color:var(--muted)"></div>
+                    <div id="quick-vitals" style="margin-top:8px;color:var(--muted)"></div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Card -->
+        <div class="card" id="result-card" style="display:none;margin-top:16px;">
+            <h3>Risk Engine Output</h3>
+            <small id="algo-name" style="color:var(--muted);display:block;margin-bottom:8px;">
+                WHO Rule-Based Maternal Risk Detection Algorithm
+            </small>
+            <div class="kv"><div><strong>Score</strong></div><div class="big-number" id="result-score"></div></div>
+            <div class="kv" style="margin-top:8px"><div><strong>Level</strong></div><div id="result-level" class="orange"></div></div>
+
+            <!-- NEW -->
+            <div style="margin-top:12px">
+                <strong>Vitals Status (High / Low / Normal)</strong>
+                <div id="result-vital-status" style="color:var(--muted);margin-top:6px"></div>
+            </div>
+
+            <div style="margin-top:12px"><strong>Contributing Factors</strong><div id="result-factors" style="color:var(--muted);margin-top:6px"></div></div>
+            <small id="result-ts" style="display:block;margin-top:10px;color:var(--muted)"></small>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

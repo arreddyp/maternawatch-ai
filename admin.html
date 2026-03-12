@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin — MaternaWatch AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+    <div class="logo">MATERNAWATCH AI</div>
+    <div class="top-right">
+        <div class="user-info" id="user-info">Admin</div>
+        <button class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="app-wrap">
+    <nav class="sidebar">
+        <h3>MENU</h3>
+        <ul>
+            <li class="active" id="menu-dashboard"><a href="javascript:void(0)" onclick="showSection('dashboard')">Dashboard</a></li>
+            <li id="menu-threshold"><a href="javascript:void(0)" onclick="showSection('threshold')">Thresholds</a></li>
+            <li id="menu-audit"><a href="javascript:void(0)" onclick="showSection('audit')">Audit Logs</a></li>
+            <li style="margin-top:20px;border-top:1px solid #e6eef7;padding-top:20px">
+                <a href="doctor.html">Doctor</a>
+            </li>
+            <li><a href="patient.html">Patient</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content" id="admin-content">
+        
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard-section">
+            <h2>Admin Dashboard</h2>
+            
+            <div class="card-grid" style="margin-top:16px">
+                <div class="card">
+                    <h4>Total Patients</h4>
+                    <p class="big-number" id="adm-total-patients">0</p>
+                    <small style="color:var(--muted)">Registered in system</small>
+                </div>
+                <div class="card">
+                    <h4>Total Doctors</h4>
+                    <p class="big-number" id="adm-total-doctors">0</p>
+                    <small style="color:var(--muted)">Active practitioners</small>
+                </div>
+                <div class="card">
+                    <h4>Active Alerts</h4>
+                    <p class="big-number orange" id="adm-active-alerts">0</p>
+                    <small style="color:var(--muted)">Requiring attention</small>
+                </div>
+                <div class="card">
+                    <h4>System Health</h4>
+                    <p class="big-number green" id="adm-system-health">Good</p>
+                    <small style="color:var(--muted)">All systems operational</small>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card" style="margin-top:16px">
+                <h3>System Overview</h3>
+                <div style="margin-top:12px">
+                    <div class="kv" style="margin-bottom:12px">
+                        <div><strong>Last Alert Generated</strong></div>
+                        <div id="adm-last-alert" style="color:var(--muted)">—</div>
+                    </div>
+                    <div class="kv" style="margin-bottom:12px">
+                        <div><strong>Thresholds Last Modified</strong></div>
+                        <div id="adm-last-threshold" style="color:var(--muted)">—</div>
+                    </div>
+                    <div class="kv">
+                        <div><strong>Database Size</strong></div>
+                        <div id="adm-db-size" style="color:var(--muted)">—</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THRESHOLDS SECTION -->
+        <section id="threshold-section" style="display:none">
+            <h2>Configure Risk Thresholds</h2>
+            <p style="color:var(--muted);margin-top:8px">Adjust risk engine cutoff values. Changes apply immediately to all patients.</p>
+
+            <div class="card" style="margin-top:16px">
+                <h3>Current Thresholds</h3>
+                <form id="threshold-form" class="vitals-form" style="margin-top:16px">
+                    <div class="form-group">
+                        <label>Blood Pressure — Systolic (mmHg)</label>
+                        <input id="th-bp" type="number" required placeholder="140">
+                        <small style="color:var(--muted);margin-top:4px;display:block">Values above this trigger BP risk factor</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Blood Sugar — High Level (mg/dL)</label>
+                        <input id="th-sugar" type="number" required placeholder="140">
+                        <small style="color:var(--muted);margin-top:4px;display:block">Values above this trigger Sugar risk factor</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fetal Heart Rate — Upper Limit (bpm)</label>
+                        <input id="th-fhr" type="number" required placeholder="160">
+                        <small style="color:var(--muted);margin-top:4px;display:block">Values above this trigger FHR abnormality</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Weight Gain Limit (kg)</label>
+                        <input id="th-weight" type="number" required placeholder="10">
+                        <small style="color:var(--muted);margin-top:4px;display:block">Maximum average weekly weight gain</small>
+                    </div>
+
+                    <button class="submit-btn" type="submit" style="grid-column:1/-1;margin-top:12px">Save Thresholds</button>
+                </form>
+            </div>
+
+            <!-- Threshold History -->
+            <div class="card" style="margin-top:16px">
+                <h3>Threshold Change History</h3>
+                <table style="margin-top:12px">
+                    <thead>
+                        <tr><th>Date & Time</th><th>Changed By</th><th>Previous Value</th><th>New Value</th></tr>
+                    </thead>
+                    <tbody id="threshold-history-table">
+                        <tr class="table-empty"><td colspan="4">No threshold changes yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- AUDIT LOGS SECTION -->
+        <section id="audit-section" style="display:none">
+            <h2>Audit Logs</h2>
+            <p style="color:var(--muted);margin-top:8px">Complete activity log of all system events, user actions, and alert generation.</p>
+
+            <!-- Filter Controls -->
+            <div class="card" style="margin-top:16px">
+                <h3>Filter Logs</h3>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+                    <div style="flex:1;min-width:200px">
+                        <label style="display:block;margin-bottom:6px;font-size:0.9em"><strong>Action Type</strong></label>
+                        <select id="audit-filter-action" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef7">
+                            <option value="">All Actions</option>
+                            <option value="vitals submitted">Vitals Submitted</option>
+                            <option value="alert generated">Alert Generated</option>
+                            <option value="contacted">Doctor Contacted</option>
+                            <option value="reviewed">Alert Reviewed</option>
+                            <option value="thresholds changed">Thresholds Changed</option>
+                        </select>
+                    </div>
+                    <div style="flex:1;min-width:200px">
+                        <label style="display:block;margin-bottom:6px;font-size:0.9em"><strong>User/Entity</strong></label>
+                        <select id="audit-filter-who" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef7">
+                            <option value="">All Users</option>
+                            <option value="patient">Patients</option>
+                            <option value="doctor">Doctors</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;align-items:flex-end;gap:8px">
+                        <button class="submit-btn" type="button" onclick="applyAuditFilters()" style="margin:0">Apply Filter</button>
+                        <button type="button" onclick="clearAuditFilters()" style="padding:8px 16px;border-radius:8px;border:1px solid #e6eef7;background:white;cursor:pointer">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Table -->
+            <div class="card" style="margin-top:16px">
+                <h3>Activity Log</h3>
+                <table style="margin-top:12px">
+                    <thead>
+                        <tr><th>Date & Time</th><th>User / Entity</th><th>Action</th><th>Details</th></tr>
+                    </thead>
+                    <tbody id="audit-table">
+                        <tr class="table-empty"><td colspan="4">No audit entries</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Log Statistics -->
+            <div class="card-grid" style="margin-top:16px">
+                <div class="card">
+                    <h4>Total Events</h4>
+                    <p class="big-number" id="audit-total-events">0</p>
+                </div>
+                <div class="card">
+                    <h4>Vitals Submitted</h4>
+                    <p class="big-number" id="audit-vitals-count">0</p>
+                </div>
+                <div class="card">
+                    <h4>Alerts Generated</h4>
+                    <p class="big-number orange" id="audit-alerts-count">0</p>
+                </div>
+                <div class="card">
+                    <h4>Doctor Actions</h4>
+                    <p class="big-number" id="audit-doctor-count">0</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+// Section Navigation
+function showSection(sectionName) {
+    const sections = ['dashboard-section', 'threshold-section', 'audit-section'];
+    sections.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.style.display = (s === `${sectionName}-section`) ? '' : 'none';
+    });
+    
+    // Update active menu
+    document.getElementById('menu-dashboard').classList.remove('active');
+    document.getElementById('menu-threshold').classList.remove('active');
+    document.getElementById('menu-audit').classList.remove('active');
+    
+    if (sectionName === 'dashboard') document.getElementById('menu-dashboard').classList.add('active');
+    else if (sectionName === 'threshold') document.getElementById('menu-threshold').classList.add('active');
+    else if (sectionName === 'audit') document.getElementById('menu-audit').classList.add('active');
+}
+
+// Audit Filters
+function applyAuditFilters() {
+    const auditLogs = localStorage.getItem('auditLogs') ? JSON.parse(localStorage.getItem('auditLogs')) : [];
+    const actionFilter = document.getElementById('audit-filter-action').value;
+    const whoFilter = document.getElementById('audit-filter-who').value;
+    
+    let filtered = auditLogs;
+    if (actionFilter) filtered = filtered.filter(l => l.action.includes(actionFilter));
+    if (whoFilter) {
+        if (whoFilter === 'patient') filtered = filtered.filter(l => l.who.startsWith('patient'));
+        else if (whoFilter === 'doctor') filtered = filtered.filter(l => l.who.startsWith('Dr.') || l.who.startsWith('doctor'));
+        else if (whoFilter === 'admin') filtered = filtered.filter(l => l.who === 'admin');
+    }
+    
+    renderAuditTable(filtered);
+}
+
+function clearAuditFilters() {
+    document.getElementById('audit-filter-action').value = '';
+    document.getElementById('audit-filter-who').value = '';
+    const auditLogs = localStorage.getItem('auditLogs') ? JSON.parse(localStorage.getItem('auditLogs')) : [];
+    renderAuditTable(auditLogs);
+}
+
+function renderAuditTable(logs) {
+    const tbody = document.getElementById('audit-table');
+    tbody.innerHTML = '';
+    if (!logs || logs.length === 0) {
+        const tr = document.createElement('tr');
+        tr.className = 'table-empty';
+        tr.innerHTML = '<td colspan="4">No matching entries</td>';
+        tbody.appendChild(tr);
+        return;
+    }
+    logs.forEach(l => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + l.when + '</td><td>' + l.who + '</td><td>' + l.action + '</td><td style="color:var(--muted);font-size:0.9em">—</td>';
+        tbody.appendChild(tr);
+    });
+}
+
+(function () {
+    const read = (k, d = []) => {
+        try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(d)); }
+        catch { return d; }
+    };
+    const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    // NEW: normalize old/bad threshold rows so no "undefined" is shown
+    function normalizeThresholdHistory(rows) {
+        return (rows || []).map((r, i) => ({
+            id: r.id || `th-${Date.now()}-${i}`,
+            when: r.when || r.date || r.ts || new Date().toLocaleString(),
+            by: r.by || r.changedBy || r.user || 'admin',
+            prev: r.prev || r.previousValue || r.previous || 'BP 140 / Sugar 140 / FHR 160 / Weight 10',
+            next: r.next || r.newValue || r.current || 'BP 140 / Sugar 140 / FHR 160 / Weight 10'
+        }));
+    }
+
+    function seedAdminData() {
+        const fakePatients = [
+            { id: 'patient-001', name: 'Sarah Johnson' },
+            { id: 'patient-002', name: 'Maria Garcia' },
+            { id: 'patient-003', name: 'Lisa Chen' },
+            { id: 'patient-004', name: 'Priya Patel' },
+            { id: 'patient-005', name: 'Emma Davis' }
+        ];
+
+        const fakeDoctors = [
+            { id: 'doctor-001', name: 'Dr. Smith' },
+            { id: 'doctor-002', name: 'Dr. Wilson' },
+            { id: 'doctor-003', name: 'Dr. Kumar' }
+        ];
+
+        // UPDATED: proper fields (when/by/prev/next)
+        const fakeThresholdHistory = [
+            {
+                id: 'th-001',
+                when: '3/01/2026, 09:00 AM',
+                by: 'admin',
+                prev: 'BP 145 / Sugar 150 / FHR 165 / Weight 12',
+                next: 'BP 140 / Sugar 145 / FHR 160 / Weight 10'
+            },
+            {
+                id: 'th-002',
+                when: '3/05/2026, 11:30 AM',
+                by: 'admin',
+                prev: 'BP 140 / Sugar 145 / FHR 160 / Weight 10',
+                next: 'BP 140 / Sugar 140 / FHR 160 / Weight 10'
+            }
+        ];
+
+        const fakeAudit = [
+            { when: '3/7/2026, 9:10 AM', who: 'patient-001', action: 'vitals submitted' },
+            { when: '3/7/2026, 9:11 AM', who: 'system', action: 'alert generated' },
+            { when: '3/7/2026, 9:25 AM', who: 'Dr. Smith', action: 'reviewed' },
+            { when: '3/6/2026, 10:00 AM', who: 'admin', action: 'thresholds changed' }
+        ];
+
+        if ((read('patients') || []).length === 0) write('patients', fakePatients);
+        if ((read('doctors') || []).length === 0) write('doctors', fakeDoctors);
+
+        // UPDATED: always normalize existing history
+        const existingTH = normalizeThresholdHistory(read('thresholdHistory', []));
+        if (existingTH.length === 0) write('thresholdHistory', fakeThresholdHistory);
+        else write('thresholdHistory', existingTH);
+
+        if ((read('auditLogs') || []).length === 0) write('auditLogs', fakeAudit);
+
+        const alerts = read('alerts', []);
+        if (!Array.isArray(alerts) || alerts.length === 0) {
+            write('alerts', [
+                { id: 'a1', ts: '3/7/2026, 9:10 AM', patientName: 'Sarah Johnson', score: 8, level: 'High', status: 'open' },
+                { id: 'a2', ts: '3/7/2026, 8:40 AM', patientName: 'Maria Garcia', score: 5, level: 'Moderate', status: 'monitoring' },
+                { id: 'a3', ts: '3/6/2026, 6:20 PM', patientName: 'Lisa Chen', score: 7, level: 'High', status: 'open' }
+            ]);
+        }
+    }
+
+    function renderAdminDashboard() {
+        const patients = read('patients', []);
+        const doctors = read('doctors', []);
+        const alerts = read('alerts', []);
+        const thresholdHistory = normalizeThresholdHistory(read('thresholdHistory', [])); // UPDATED
+        const audit = read('auditLogs', []);
+
+        const activeAlerts = alerts.filter(a => (a.status || '').toLowerCase() !== 'closed').length;
+        const lastAlert = alerts[0]?.ts || alerts[alerts.length - 1]?.ts || '—';
+        const lastThreshold = thresholdHistory[0]?.when || thresholdHistory[thresholdHistory.length - 1]?.when || '—';
+        const dbSize = `${patients.length + doctors.length + alerts.length + audit.length} records`;
+
+        const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+        setText('adm-total-patients', patients.length);
+        setText('adm-total-doctors', doctors.length);
+        setText('adm-active-alerts', activeAlerts);
+        setText('adm-last-alert', lastAlert);
+        setText('adm-last-threshold', lastThreshold);
+        setText('adm-db-size', dbSize);
+
+        const thTbody = document.getElementById('threshold-history-table');
+        if (thTbody) {
+            const rows = thresholdHistory.length
+                ? thresholdHistory.map(r => `
+                    <tr>
+                        <td>${r.when || '—'}</td>
+                        <td>${r.by || 'admin'}</td>
+                        <td>${r.prev || '—'}</td>
+                        <td>${r.next || '—'}</td>
+                    </tr>
+                  `).join('')
+                : '<tr class="table-empty"><td colspan="4">No threshold changes yet</td></tr>';
+            thTbody.innerHTML = rows;
+        }
+
+        renderAuditTable(audit);
+        setText('audit-total-events', audit.length);
+        setText('audit-vitals-count', audit.filter(x => (x.action || '').includes('vitals submitted')).length);
+        setText('audit-alerts-count', audit.filter(x => (x.action || '').includes('alert generated')).length);
+        setText('audit-doctor-count', audit.filter(x => (x.who || '').startsWith('Dr.') || (x.who || '').startsWith('doctor')).length);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        seedAdminData();
+        renderAdminDashboard();
+    });
+})();
+</script>
+</body>
+</html>

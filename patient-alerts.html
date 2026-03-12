@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Alerts — MaternaWatch AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+    <div class="logo">MATERNAWATCH AI</div>
+    <div class="top-right">
+        <div class="user-info" id="user-info">Patient</div>
+        <button class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="app-wrap">
+    <nav class="sidebar">
+        <h3>MENU</h3>
+        <ul>
+            <li><a href="patient.html">Dashboard</a></li>
+            <li><a href="patient-vitals.html">Enter Vitals</a></li>
+            <li><a href="patient-history.html">Risk History</a></li>
+            <li class="active"><a href="patient-alerts.html">My Alerts</a></li>
+            <li><a href="doctor.html">Doctor View</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="card">
+            <h3>Your Alerts</h3>
+            <table style="margin-top:12px">
+                <thead>
+                    <tr><th>Date</th><th>Level</th><th>Doctor Contacted</th><th>Status</th></tr>
+                </thead>
+                <tbody id="alerts-table">
+                    <tr class="table-empty"><td colspan="4">Loading alerts...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+// Sample patient alerts data
+const samplePatientAlerts = [
+    { date: '3/5/2026, 8:30 AM', level: 'High', doctorContacted: 'Yes', status: 'Open' },
+    { date: '3/4/2026, 9:15 AM', level: 'High', doctorContacted: 'Yes', status: 'Monitoring' },
+    { date: '3/2/2026, 8:45 AM', level: 'High', doctorContacted: 'Yes', status: 'Monitoring' },
+    { date: '2/29/2026, 8:00 AM', level: 'High', doctorContacted: 'Yes', status: 'Closed' },
+    { date: '2/28/2026, 10:30 AM', level: 'High', doctorContacted: 'Yes', status: 'Closed' },
+    { date: '2/26/2026, 8:15 AM', level: 'Moderate', doctorContacted: 'No', status: 'Closed' },
+    { date: '2/23/2026, 9:00 AM', level: 'Moderate', doctorContacted: 'Yes', status: 'Closed' },
+    { date: '2/20/2026, 10:15 AM', level: 'High', doctorContacted: 'Yes', status: 'Closed' }
+];
+
+function loadPatientAlerts() {
+    const tbody = document.getElementById('alerts-table');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (samplePatientAlerts.length === 0) {
+        tbody.innerHTML = '<tr class="table-empty"><td colspan="4">No alerts</td></tr>';
+        return;
+    }
+
+    samplePatientAlerts.forEach(alert => {
+        const tr = document.createElement('tr');
+        const levelClass = alert.level === 'High' ? 'red' : alert.level === 'Moderate' ? 'orange' : '';
+        const statusClass = alert.status === 'Open' ? 'red' : alert.status === 'Monitoring' ? 'orange' : '';
+
+        tr.innerHTML = `
+            <td>${alert.date}</td>
+            <td><span class="${levelClass}">${alert.level}</span></td>
+            <td>${alert.doctorContacted}</td>
+            <td><span class="${statusClass}">${alert.status}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Load alerts on page load
+document.addEventListener('DOMContentLoaded', loadPatientAlerts);
+</script>
+</body>
+</html>

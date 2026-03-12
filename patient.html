@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MaternaWatch AI – Patient Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        :root{
+            --low:#16a34a;
+            --mod:#f59e0b;
+            --high:#dc2626;
+            --card:#ffffff;
+            --line:#e5e7eb;
+            --text:#111827;
+            --muted:#6b7280;
+            --bgsoft:#f8fafc;
+        }
+
+        .main-content.patient-dashboard{
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            padding: clamp(14px, 2vw, 24px);
+            overflow-x: hidden;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .page-head{ margin-bottom: 18px; }
+        .page-head h1{
+            margin: 0;
+            font-size: clamp(20px, 2.2vw, 28px);
+            color: var(--text);
+            line-height: 1.2;
+        }
+        .page-head p{
+            margin: 6px 0 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section-block{ margin-bottom: 16px; }
+
+        .grid-2{
+            display:grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            gap:16px;
+            align-items: stretch;
+        }
+
+        .card{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:14px;
+            padding:18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.04);
+            height: 100%;
+        }
+
+        .card h3{
+            margin:0 0 12px;
+            font-size:16px;
+            color:var(--text);
+        }
+
+        .risk-wrap{
+            display:flex;
+            align-items:center;
+            justify-content: space-between;
+            gap:18px;
+            flex-wrap:wrap;
+        }
+
+        .gauge{
+            --value: 0;
+            --color: var(--low);
+            width: clamp(130px, 20vw, 160px);
+            aspect-ratio: 1 / 1;
+            border-radius:50%;
+            background: conic-gradient(var(--color) calc(var(--value) * 1%), #e5e7eb 0);
+            display:grid;
+            place-items:center;
+            position:relative;
+            flex-shrink: 0;
+        }
+        .gauge::after{
+            content:"";
+            width: 78%;
+            height: 78%;
+            border-radius:50%;
+            background:#fff;
+            position:absolute;
+        }
+        .gauge-center{
+            position:relative;
+            z-index:1;
+            text-align:center;
+        }
+        .gauge-score{
+            font-size: clamp(22px, 2.5vw, 28px);
+            font-weight:800;
+            color:#111827;
+            line-height:1;
+        }
+        .gauge-sub{
+            font-size:12px;
+            color:var(--muted);
+            margin-top:4px;
+        }
+
+        .badge{
+            display:inline-block;
+            padding:6px 12px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:700;
+            margin-bottom:8px;
+        }
+        .badge.low{ background:#dcfce7; color:#166534; }
+        .badge.moderate{ background:#fef3c7; color:#92400e; }
+        .badge.high{ background:#fee2e2; color:#991b1b; }
+
+        .muted{ color:var(--muted); font-size:13px; }
+
+        .factor-list{
+            margin:0;
+            padding-left:18px;
+            display:grid;
+            gap:8px;
+        }
+        .factor-list li{
+            color:#374151;
+            font-size:14px;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .post-trend-grid{
+            display:grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap:16px;
+            align-items:start;
+            margin-top:16px;
+        }
+        .sub-head{
+            margin:0 0 10px;
+            font-size:14px;
+            color:#374151;
+            font-weight:700;
+        }
+
+        .vitals-grid{
+            display:grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap:12px;
+            margin-top:0;
+        }
+
+        .vital{
+            border:1px solid var(--line);
+            border-radius:10px;
+            padding:12px;
+            background:#fff;
+            min-height: 110px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+        }
+        .vital .top{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            color:#374151;
+            font-size:13px;
+            margin-bottom:8px;
+            line-height: 1.2;
+        }
+        .vital .val{
+            font-size: clamp(20px, 2.2vw, 24px);
+            font-weight:800;
+            color:#111827;
+            line-height:1;
+        }
+        .vital .unit{
+            color:var(--muted);
+            font-size:12px;
+            margin-top:4px;
+        }
+
+        .alert-list{
+            display:grid;
+            gap:10px;
+        }
+        .alert-item{
+            border:1px solid #fecaca;
+            background:#fff1f2;
+            border-left:4px solid var(--high);
+            border-radius:8px;
+            padding:10px;
+            font-size:14px;
+            color:#7f1d1d;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .actions{
+            margin-top:18px;
+            display:flex;
+            justify-content:flex-end;
+        }
+        .cta{
+            border:0;
+            background:#4f46e5;
+            color:#fff;
+            padding:12px 16px;
+            border-radius:10px;
+            font-weight:700;
+            cursor:pointer;
+            text-decoration:none;
+            display:inline-block;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1100px){
+            .post-trend-grid{ grid-template-columns:1fr; }
+            .vitals-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+        }
+
+        @media (max-width: 980px){
+            .grid-2{ grid-template-columns: 1fr; }
+            .actions{ justify-content:flex-start; }
+        }
+
+        @media (max-width: 760px){
+            .main-content.patient-dashboard{ padding: 12px; }
+            .risk-wrap{ justify-content:flex-start; }
+            .vitals-grid{ grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="logo">MATERNAWATCH AI</div>
+        <div class="top-right">
+            <div class="user-info" id="user-info">Patient</div>
+            <button class="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <div class="app-wrap">
+        <nav class="sidebar">
+            <h3>MENU</h3>
+            <ul>
+                <li><a class="nav-item active" href="patient.html">Dashboard</a></li>
+                <li><a class="nav-item" href="patient-vitals.html">Enter Daily Vitals</a></li>
+                <li><a class="nav-item" href="patient-history.html">Risk History</a></li>
+                <li><a class="nav-item" href="patient-alerts.html">My Alerts</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content patient-dashboard">
+            <section class="card section-block">
+                <div class="page-head">
+                    <h1>MaternaWatch AI – Patient Dashboard</h1>
+                    <p>Daily Pregnancy Health Monitoring</p>
+                </div>
+
+                <div class="grid-2">
+                    <article class="card">
+                        <h3>Current Risk</h3>
+                        <div class="risk-wrap">
+                            <div class="gauge" id="risk-gauge">
+                                <div class="gauge-center">
+                                    <div class="gauge-score" id="risk-score">0</div>
+                                    <div class="gauge-sub">/ 10</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="badge low" id="risk-badge">Low Risk</div>
+                                <div class="muted" id="last-updated">Last updated: —</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="card">
+                        <h3>Contributing Factors</h3>
+                        <ul class="factor-list" id="factors-list">
+                            <li>No major risk factors detected</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="post-trend-grid" style="margin-top:16px;">
+                    <div>
+                        <h4 class="sub-head">Latest Vitals</h4>
+                        <div class="vitals-grid">
+                            <div class="vital"><div class="top">🫀 <span>Blood Pressure</span></div><div class="val" id="v-bp">—</div><div class="unit">mmHg</div></div>
+                            <div class="vital"><div class="top">🩸 <span>Blood Sugar</span></div><div class="val" id="v-sugar">—</div><div class="unit">mg/dL</div></div>
+                            <div class="vital"><div class="top">⚖️ <span>Weight</span></div><div class="val" id="v-weight">—</div><div class="unit">kg</div></div>
+                            <div class="vital"><div class="top">👶 <span>Fetal Heart Rate</span></div><div class="val" id="v-fhr">—</div><div class="unit">bpm</div></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="sub-head">Recent Alerts</h4>
+                        <div class="alert-list" id="alert-list">
+                            <div class="muted">No moderate/high risk alerts</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <article class="card" style="margin-top:16px;">
+                    <h3>7-Day Risk Trend</h3>
+                    <div class="trend-frame">
+                        <svg class="trend-svg" id="trend-svg" viewBox="0 0 700 220" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                </article> -->  
+            </section>
+
+            <div class="actions">
+                <a class="cta" href="patient-vitals.html">Enter Today's Health Check</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        (function(){
+            function read(key){
+                try { return JSON.parse(localStorage.getItem(key)) || []; }
+                catch { return []; }
+            }
+            
+            function checkAuth() {
+                const user = localStorage.getItem('user');
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                if (!user || isLoggedIn !== 'true') {
+                    window.location.href = 'index.html';
+                    return false;
+                }
+                return true;
+            }
+
+            function handleLogout() {
+                localStorage.removeItem('user');
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = 'index.html';
+            }
+
+            checkAuth();
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const logoutBtn = document.querySelector('.logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.onclick = function(e) {
+                        e.preventDefault();
+                        handleLogout();
+                    };
+                }
+            });
+        })();
+    </script>
+
+    <!-- ADD THIS NEW SCRIPT BLOCK -->
+    <script>
+    (function() {
+        function readJSON(key, fallback = null) {
+            try {
+                const v = JSON.parse(localStorage.getItem(key));
+                return v ?? fallback;
+            } catch {
+                return fallback;
+            }
+        }
+
+        function checkAuth() {
+            const user = localStorage.getItem("user");
+            const isLoggedIn = localStorage.getItem("isLoggedIn");
+            if (!user || isLoggedIn !== "true") {
+                window.location.href = "index.html";
+                return null;
+            }
+            return JSON.parse(user);
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("user");
+            localStorage.removeItem("isLoggedIn");
+            window.location.href = "index.html";
+        }
+
+        function toLevel(score) {
+            if (score >= 6) return "High";
+            if (score >= 3) return "Moderate";
+            return "Low";
+        }
+
+        function levelClass(level) {
+            const l = String(level || "").toLowerCase();
+            if (l === "high") return "high";
+            if (l === "moderate") return "moderate";
+            return "low";
+        }
+
+        function latestFrom(keys) {
+            for (const k of keys) {
+                const arr = readJSON(k, []);
+                if (Array.isArray(arr) && arr.length) return arr[arr.length - 1];
+            }
+            return null;
+        }
+
+        function renderDashboard() {
+            const latestVital = latestFrom(["vitals", "patientVitals", "dailyVitals"]);
+            const latestRisk = latestFrom(["riskHistory", "riskScores"]) || latestVital;
+
+            // Risk
+            const score = Number(latestRisk?.riskScore ?? latestRisk?.score ?? 0);
+            const level = latestRisk?.riskLevel ?? latestRisk?.level ?? toLevel(score);
+            const updated =
+                latestRisk?.date ||
+                latestRisk?.createdAt ||
+                latestRisk?.timestamp ||
+                "—";
+
+            const gauge = document.getElementById("risk-gauge");
+            const scoreEl = document.getElementById("risk-score");
+            const badgeEl = document.getElementById("risk-badge");
+            const updatedEl = document.getElementById("last-updated");
+
+            if (gauge) {
+                gauge.style.setProperty("--value", String(Math.max(0, Math.min(100, score * 10))));
+                gauge.style.setProperty(
+                    "--color",
+                    level.toLowerCase() === "high" ? "#dc2626" : level.toLowerCase() === "moderate" ? "#f59e0b" : "#16a34a"
+                );
+            }
+            if (scoreEl) scoreEl.textContent = String(score);
+            if (badgeEl) {
+                badgeEl.textContent = `${level} Risk`;
+                badgeEl.className = `badge ${levelClass(level)}`;
+            }
+            if (updatedEl) updatedEl.textContent = `Last updated: ${updated}`;
+
+            // Factors
+            const factorsList = document.getElementById("factors-list");
+            const factors =
+                latestRisk?.factors ||
+                latestRisk?.riskFactors ||
+                latestVital?.factors ||
+                [];
+            if (factorsList) {
+                factorsList.innerHTML = "";
+                if (Array.isArray(factors) && factors.length) {
+                    factors.forEach((f) => {
+                        const li = document.createElement("li");
+                        li.textContent = String(f);
+                        factorsList.appendChild(li);
+                    });
+                } else if (typeof factors === "string" && factors.trim()) {
+                    const li = document.createElement("li");
+                    li.textContent = factors;
+                    factorsList.appendChild(li);
+                } else {
+                    const li = document.createElement("li");
+                    li.textContent = "No major risk factors detected";
+                    factorsList.appendChild(li);
+                }
+            }
+
+            // Vitals
+            const bp = latestVital?.bp || latestVital?.bloodPressure ||
+                (latestVital?.systolic && latestVital?.diastolic
+                    ? `${latestVital.systolic}/${latestVital.diastolic}`
+                    : "—");
+            const sugar = latestVital?.sugar ?? latestVital?.bloodSugar ?? "—";
+            const weight = latestVital?.weight ?? "—";
+            const fhr = latestVital?.fhr ?? latestVital?.fetalHeartRate ?? "—";
+
+            const set = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value ?? "—";
+            };
+            set("v-bp", bp || "—");
+            set("v-sugar", sugar);
+            set("v-weight", weight);
+            set("v-fhr", fhr);
+
+            // Alerts
+            const alertList = document.getElementById("alert-list");
+            const alerts = readJSON("alerts", []);
+            if (alertList) {
+                const rows = Array.isArray(alerts) ? alerts.slice(-3).reverse() : [];
+                const show = rows.filter(a => {
+                    const lvl = String(a.level || "").toLowerCase();
+                    return lvl === "high" || lvl === "moderate";
+                });
+
+                if (!show.length) {
+                    alertList.innerHTML = `<div class="muted">No moderate/high risk alerts</div>`;
+                } else {
+                    alertList.innerHTML = show.map(a => `
+                        <div class="alert-item">
+                            <span>${a.level || "Alert"} risk alert</span>
+                            <small>${a.date || a.createdAt || ""}</small>
+                        </div>
+                    `).join("");
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = checkAuth();
+            if (!user) return;
+
+            const userInfo = document.getElementById("user-info");
+            if (userInfo) userInfo.textContent = user.name || user.username || "Patient";
+
+            const logoutBtn = document.querySelector(".logout-btn");
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    handleLogout();
+                });
+            }
+
+            renderDashboard();
+        });
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patients — MaternaWatch AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+    <div class="logo">MATERNAWATCH AI</div>
+    <div class="top-right">
+        <div class="notification" id="notif">🔔 <span class="badge" id="notif-badge">0</span></div>
+        <div class="user-info" id="user-info">Doctor</div>
+        <button class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="app-wrap">
+    <nav class="sidebar">
+        <h3>MENU</h3>
+        <ul>
+            <li><a href="doctor.html">Dashboard</a></li>
+            <li class="active"><a href="doctor-patients.html">Patients</a></li>
+            <li><a href="doctor-alerts.html">Alerts</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="card">
+            <h3>Patient List</h3>
+            <table style="margin-top:12px">
+                <thead>
+                    <tr><th>Name</th><th>Age</th><th>Current Risk</th><th>Last Seen</th><th>Action</th></tr>
+                </thead>
+                <tbody id="patient-list-table">
+                    <!-- static/fallback rows – will be overwritten if stored patients exist -->
+                    <tr>
+                        <td>Sarah Johnson</td><td>28</td><td>High</td><td>2/28/2025, 10:30 AM</td>
+                        <td><button class="view-btn" onclick="showPatientDetail('patient-001')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>Maria Garcia</td><td>31</td><td>Moderate</td><td>2/28/2025, 2:15 PM</td>
+                        <td><button class="view-btn" onclick="showPatientDetail('patient-002')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>Emma Davis</td><td>26</td><td>Low</td><td>2/27/2025, 9:45 AM</td>
+                        <td><button class="view-btn" onclick="showPatientDetail('patient-003')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>Lisa Chen</td><td>35</td><td>High</td><td>2/26/2025, 3:20 PM</td>
+                        <td><button class="view-btn" onclick="showPatientDetail('patient-004')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>Priya Patel</td><td>29</td><td>Low</td><td>2/27/2025, 11:00 AM</td>
+                        <td><button class="view-btn" onclick="showPatientDetail('patient-005')">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Patient Detail Modal -->
+        <div id="patient-detail-modal" style="display:none;margin-top:16px;">
+            <div class="card">
+                <h3 id="detail-patient-name">Patient Details</h3>
+                <div class="kv"><div><strong>Age:</strong></div><div id="detail-age">—</div></div>
+                <div class="kv"><div><strong>Weeks Pregnant:</strong></div><div id="detail-weeks">—</div></div>
+                <div class="kv"><div><strong>Contact:</strong></div><div id="detail-contact">—</div></div>
+                <div style="margin-top:12px"><strong>Current Risk Score:</strong> <span id="detail-score" class="big-number">—</span></div>
+                <div id="detail-level" style="margin-top:8px;color:var(--orange)"></div>
+                <div style="margin-top:12px"><strong>Explanation:</strong><div id="detail-explanation" style="color:var(--muted);margin-top:6px"></div></div>
+
+                <div style="margin-top:16px">
+                    <h4>Intervention Notes</h4>
+                    <textarea id="detail-notes" style="width:100%;min-height:100px;padding:10px;border-radius:8px;border:1px solid #e6eef7"></textarea>
+                </div>
+                <div style="margin-top:12px">
+                    <label><input type="checkbox" id="detail-contacted"> Doctor Contacted</label>
+                </div>
+                <div style="margin-top:12px">
+                    <label>Status:</label>
+                    <select id="detail-status" style="padding:8px;border-radius:8px;border:1px solid #e6eef7">
+                        <option value="open">Open</option>
+                        <option value="monitoring">Monitoring</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+                <button class="submit-btn" onclick="document.getElementById('patient-detail-modal').style.display='none'" style="margin-top:12px">Save & Close</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

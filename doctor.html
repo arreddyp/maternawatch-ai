@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor — MaternaWatch AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+    <div class="logo">MATERNAWATCH AI</div>
+    <div class="top-right">
+        <div class="notification" id="notif">🔔 <span class="badge" id="notif-badge">0</span></div>
+        <div class="user-info" id="user-info">Doctor</div>
+        <button class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="app-wrap">
+    <nav class="sidebar">
+        <h3>MENU</h3>
+        <ul>
+            <li class="active"><a href="doctor.html">Dashboard</a></li>
+            <li><a href="doctor-patients.html">Patients</a></li>
+            <li><a href="doctor-alerts.html">Alerts</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content" id="doctor-content">
+        <!-- Summary Cards -->
+        <div class="card-grid">
+            <div class="card">
+                <h3>Total Patients</h3>
+                <div class="big-number">24</div>
+                <div class="small">Registered</div>
+            </div>
+            <div class="card">
+                <h3>Active Alerts</h3>
+                <div class="big-number">7</div>
+                <div class="small">Alerts needing review</div>
+            </div>
+            <div class="card">
+                <h3>Critical Now</h3>
+                <div class="big-number red">3</div>
+                <div class="small">High risk</div>
+            </div>
+        </div>
+
+        <!-- Emergency Card -->
+        <div class="card" id="emergency-card" style="display:none;border:2px solid #dc2626;background:#fef2f2;">
+            <h3 style="color:#dc2626;">🚨 CRITICAL MATERNAL RISK DETECTED</h3>
+            <p>Immediate medical attention required.</p>
+            <div id="emergency-list" style="margin-top:8px;"></div>
+        </div>
+
+        <!-- High Risk Patients -->
+        <div class="card" style="margin-top:16px;">
+            <h3>High Risk Patients</h3>
+            <table style="width:100%;margin-top:10px;">
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Score</th>
+                        <th>Time</th>
+                        <th>View Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lakshmi N</td>
+                        <td>8</td>
+                        <td>10:35 AM</td>
+                        <td><button>View</button></td>
+                    </tr>
+                    <tr>
+                        <td>Sarah Johnson</td>
+                        <td>7</td>
+                        <td>09:50 AM</td>
+                        <td><button>View</button></td>
+                    </tr>
+                    <tr>
+                        <td>Priya Patel</td>
+                        <td>6</td>
+                        <td>08:42 AM</td>
+                        <td><button>View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Moderate Risk Patients -->
+        <div class="card" style="margin-top:16px;">
+            <h3>Moderate Risk Patients</h3>
+            <table style="width:100%;margin-top:10px;">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Score</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maria Garcia</td>
+                        <td>4</td>
+                        <td>11:20 AM</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr>
+                        <td>Jessica Taylor</td>
+                        <td>5</td>
+                        <td>07:55 AM</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Doctor Alert Actions -->
+        <div class="card" style="margin-top:16px;">
+            <h3>Doctor Alert Actions</h3>
+            <table style="width:100%;margin-top:10px;">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Level</th>
+                        <th>Contacted</th>
+                        <th>Notes</th>
+                        <th>Status</th>
+                        <th>Save</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lakshmi N</td>
+                        <td>High</td>
+                        <td><input type="checkbox" checked></td>
+                        <td><input type="text" value="Called family, advised immediate visit"></td>
+                        <td>
+                            <select>
+                                <option>Open</option>
+                                <option selected>Monitoring</option>
+                                <option>Closed</option>
+                            </select>
+                        </td>
+                        <td><button>Save</button></td>
+                    </tr>
+                    <tr>
+                        <td>Maria Garcia</td>
+                        <td>Moderate</td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="text" value="Follow-up after lunch"></td>
+                        <td>
+                            <select>
+                                <option selected>Open</option>
+                                <option>Monitoring</option>
+                                <option>Closed</option>
+                            </select>
+                        </td>
+                        <td><button>Save</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
