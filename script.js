@@ -20,6 +20,8 @@ const sampleAlertsPage = [
 
 const RISK_ALGO_NAME = 'WHO Rule-Based Maternal Risk Detection Algorithm';
 const SHOW_POPUP_RESULT = false; // set true if you want popup
+const WHATSAPP_NOTIFY_URL = 'http://localhost:8788/notify/whatsapp';
+const WHATSAPP_RISK_THRESHOLD = 7;
 
 (function () {
     function getStorage(key) {
@@ -27,6 +29,29 @@ const SHOW_POPUP_RESULT = false; // set true if you want popup
         catch (e) { return null; }
     }
     function setStorage(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+    function sendHighRiskWhatsAppAlert(risk, patientName) {
+        if (risk.score <= WHATSAPP_RISK_THRESHOLD) return;
+        fetch(WHATSAPP_NOTIFY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                patientName: patientName,
+                score: risk.score,
+                level: risk.level,
+                factors: risk.factors,
+                ts: risk.ts
+            })
+        }).then(function(res) {
+            return res.json();
+        }).then(function(data) {
+            if (data.sent) {
+                console.log('[MaternaWatch] WhatsApp alert sent for score', risk.score);
+            }
+        }).catch(function() {
+            // Notification server not running – fail silently in the browser
+        });
+    }
 
     let currentAlertFilter = {};
     let alertSort = { key: null, asc: true };
@@ -348,6 +373,7 @@ const SHOW_POPUP_RESULT = false; // set true if you want popup
                 setStorage('vitals', vitals);
 
                 saveRiskResult(user.id, risk, user.name); // auto alerts for Moderate/High
+                sendHighRiskWhatsAppAlert(risk, user.name);
                 renderSubmitResult(risk, { bpSys, bpDia, sugar, weight, pulse, fhr });
 
                 if (SHOW_POPUP_RESULT) {

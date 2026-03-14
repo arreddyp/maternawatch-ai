@@ -1,0 +1,16 @@
+{
+  "name": "maternawatch-ai",
+  "version": "1.0.0",
+  "description": "MaternaWatch AI – notification server and Google Fit connector",
+  "private": true,
+  "scripts": {
+    "notify": "node notification-server.js",
+    "fit-setup": "node googlefit-setup.js",
+    "fit-sync": "node googlefit-connector.js"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.0",
+    "open": "^10.1.0",
+    "twilio": "^5.3.4"
+  }
+}

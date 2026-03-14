@@ -1,0 +1,11 @@
+# Environment variables — never commit real credentials
+.env
+
+# Node dependencies
+node_modules/
+
+# npm lock (optional: remove this line if you want to commit it)
+# package-lock.json
+
+# macOS
+.DS_Store
